@@ -1,6 +1,5 @@
 from celery import group
 from word_count.celery import app 
-import time
 
 
 @app.task

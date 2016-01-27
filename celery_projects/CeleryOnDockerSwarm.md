@@ -152,7 +152,7 @@ $
 
 ```python
 HypriotOS: pi@rpi202 in ~
-$ docker run -d -p 6379:6379 --net=mynet --name=redis -volume=/data:/data hypriot/rpi-redis
+$ docker run -d -p 6379:6379 --net=mynet --name=redis --volume=/data:/data hypriot/rpi-redis
 a2abf9277b5e4818da89ffa282a706506ef288426486cc25b431208564bf6e0f
 
 
@@ -168,6 +168,12 @@ $
 ```
 
 ### 將檔案 celeryconfig.py、start_workers.sh、資料夾 word_count 複製到 兩台 hosts 的 /data/celery_projects 資料夾之下
+
+#### 可以使用 SCP 來達成: http://www.hypexr.org/linux_scp_help.php  
+
+例如:  
+HypriotOS: pi@rpi202 in ~  
+$ scp -r /data/celery_projects root@rpi201:/data/
 
 
 ```python
@@ -350,7 +356,7 @@ HypriotOS: pi@rpi201 in /data/celery_projects
 $
 ```
 
-#### Flower 中就會顯示 目前兩台machines中共有8個 workers -> 40 個 processes 可共使用
+#### Flower 中就會顯示 目前兩台machines中共有8個 workers = 8 x 5 = 40 個 processes 可共使用
 
 ![](./jpgs/flower3.jpg)
 
@@ -361,7 +367,7 @@ $
 from word_count.tasks import * 
  
     
-def getText(file = '.\\text\\test.txt'):
+def getWordsFromText(file = '.\\text\\test.txt'):
     with open(file) as f:
         lines = f.readlines()        
     return ' '.join(lines).replace(',', '').replace('.', '').split()
@@ -383,7 +389,7 @@ def reduce(word_counts):
 
 ```python
 # list of words
-words = getText()
+words = getWordsFromText()
 words[:3]
 ```
 
@@ -410,9 +416,7 @@ len(words)
 #### ./word_count/tasks.py 中所定義的 mapper 函數:
     from celery import group
     from word_count.celery import app 
-    import time
-
-
+    
     @app.task
     def mapper(word):
         return (word, 1) if len(word) >= 5 else None    # 過濾掉太短的word
@@ -444,11 +448,10 @@ counts[:5]
 
 
 #### 訊息一送出去，Flower 中就會顯示執行的狀況
-
 ![](./jpgs/flower4.jpg)  
 
+#### 執行完畢
 ![](./jpgs/flower5.jpg)
-
 
 #### 過程中 CPUs 並不是非常忙碌，還可以再壓榨一些
 ![](./jpgs/htop1.jpg)
