@@ -6,7 +6,7 @@ Wei Lin
 20160126  
 
 ## 緣起  
-前天(2016/01/24)到臺北參加了一場很棒的 關於 [Raspberry Pi](https://www.raspberrypi.org/), [Docker](https://www.docker.com/), [MQTT](http://mqtt.org/), [Bluemix](https://console.ng.bluemix.net/) 的 [講座](https://www.facebook.com/events/1092250660807957/1098932823473074/)。㑹中提到 Bluemix 和 MQTT 是一種 publisher/subscriber 的機制，這讓我想起前幾週接觸到的 [Celery](http://www.celeryproject.org/)，其採用 producer/queue/consumer 模型，我覺得兩者非常的相似。
+前天(2016/01/24)到臺北參加了一場很棒的 關於 [Raspberry Pi](https://www.raspberrypi.org/), [Docker](https://www.docker.com/), [MQTT](http://cheng-min-i-taiwan.blogspot.tw/2015/03/raspberry-pimqtt-android.html), [Bluemix](https://console.ng.bluemix.net/) 的 [講座](https://www.facebook.com/events/1092250660807957/1098932823473074/)。㑹中提到 Bluemix 和 MQTT 是一種 publisher/subscriber 的機制，這讓我想起前幾週接觸到的 [Celery](http://www.celeryproject.org/)，其採用 producer/queue/consumer 模型，我覺得兩者非常的相似。
 
  在 Python 的領域中，Celery 是一套著名的 distributed task queue framework，用來面對 concurrent 的需求時非常好用，尤其是它的 Canvas 機制更是在平行系統上建構複雜處理流程的利器。
 
@@ -247,7 +247,7 @@ done
 
 #### 初始建立 Celery worker containers
 建立了 4 個 containers，每個 container 有一個 Celery worker，每個 worker 可以使用 5 個 subprocesses。  
-因為 Swarm 採取 spread 策略，所以 4 個都被 schedule 到 container 數量偏少的那一台 Docker machine 上面。
+因為這個 Swarm 採取 spread 策略，所以 4 個都被 schedule 到 container 數量偏少的那一台 Docker machine 上面。
 
 
 ```python
@@ -297,9 +297,9 @@ $
 ![](./jpgs/flower22.jpg)
 
 #### 擴增 Celery worker containers
-可以動態的擴增 Celery 的 scale。  
-再增建了 4 個 containers，每個 container 有一個 Celery worker，每個 worker 可以使用 5 個 subprocesses。  
-因為採取 spread 策略，所以第二次擴增的這 4 個 containers 被平均地 schedule 到兩台 Docker machines 上面。
+可以隨時動態的擴增 Celery 的 scale 以因應效能的需求。  
+這次再增建了 4 個 containers，每個 container 有一個 Celery worker，每個 worker 可以使用 5 個 subprocesses。  
+因為這個 Swarm 採取 spread 策略，而且當下兩台 Docker machines 上的 containers 數量相當，所以第二次擴增的這 4 個 containers 被平均地 schedule 到兩台 Docker machines 上面。
 
 
 ```python
@@ -356,7 +356,7 @@ HypriotOS: pi@rpi201 in /data/celery_projects
 $
 ```
 
-#### Flower 中就會顯示 目前兩台machines中共有8個 workers = 8 x 5 = 40 個 processes 可共使用
+#### Flower 中就會顯示 目前兩台 machines 中共有8個 workers = 8 x 5 = 40 個 processes 可共使用
 
 ![](./jpgs/flower3.jpg)
 
@@ -366,7 +366,7 @@ $
 ```python
 from word_count.tasks import * 
  
-    
+# 將 text 檔案拆解成 list of words    
 def getWordsFromText(file = '.\\text\\test.txt'):
     with open(file) as f:
         lines = f.readlines()        
