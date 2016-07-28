@@ -1,0 +1,3 @@
+import CeleryConfigPlotter
+
+CeleryConfigPlotter.genConfigFile()
